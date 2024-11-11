@@ -14,50 +14,47 @@ final class ImagesListViewController: UIViewController {
     // MARK: - Private Properties
     private let photosName: [String] = Array(0..<20).map{ "\($0)" }
     
+    // форматирование даты
+    private lazy var dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .long
+        formatter.timeStyle = .none
+        formatter.locale = Locale(identifier: "ru_RU")
+        return formatter
+    }()
+    
+    private let currentDate = Date()
+    
     // MARK: - Overrides Methods
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        tableView.rowHeight = 200
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
     }
     
     // MARK: - Methods
-    func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
+    private func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
         // получение изображения
-        let imageName = "\(indexPath.row)"
-        guard let image = UIImage(named: imageName) else { return }
+        guard let image = UIImage(named: String(indexPath.row)) else { return }
         
         cell.imageForCell.image = image
         
-        // форматирование даты
-        lazy var dateFormatter: DateFormatter = {
-            let formatter = DateFormatter()
-            formatter.dateStyle = .long
-            formatter.timeStyle = .none
-            formatter.locale = Locale(identifier: "ru_RU")
-            return formatter
-        }()
-        
-        let currentDate = dateFormatter.string(from: Date())
-        cell.dateLabel.text = currentDate // приседания со значением лейбла
+        cell.dateLabel.text = dateFormatter.string(from: currentDate) // отформатированное значение добавляется в лейбл
         
         // установка лайка вручную для ячейки
-        if indexPath.row % 2 == 0 {
-            cell.likeButton.setImage(UIImage(named: "LikeActive"), for: .normal)
-        } else {
-            cell.likeButton.setImage(UIImage(named: "LikeDisabled"), for: .normal)
-        }
+        let likeButtonImageName = indexPath.row % 2 == 0 ? "LikeActive" : "LikeDisabled"
+        cell.likeButton.setImage(UIImage(named: likeButtonImageName), for: .normal)
     }
+    
 }
 // MARK: - Extensions
 extension ImagesListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        // TODO: - Добавить логику при нажатии на ячейку
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let imageName = "\(indexPath.row)"
-        guard let image = UIImage(named: imageName) else { return 0 }
+        guard let image = UIImage(named: String(indexPath.row)) else { return 0 }
         
         let imageHeight = image.size.height
         let imageWidth = image.size.width
@@ -74,17 +71,18 @@ extension ImagesListViewController: UITableViewDelegate {
 
 extension ImagesListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 20
+        return photosName.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath)
-        
-        guard let imageListCell = cell as? ImagesListCell else {
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: ImagesListCell.reuseIdentifier,
+            for: indexPath
+        ) as? ImagesListCell else {
             return UITableViewCell()
         }
-        configCell(for: imageListCell, with: indexPath)
+        configCell(for: cell, with: indexPath)
         
-        return imageListCell
+        return cell
     }
 }
