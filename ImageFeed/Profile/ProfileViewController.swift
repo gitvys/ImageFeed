@@ -24,7 +24,7 @@ final class ProfileViewController: UIViewController {
     }
     
     // MARK: - IB Actions
-    @IBAction func didLogout(_ sender: Any) {
+    @IBAction private func didLogout(_ sender: Any) {
     }
     // MARK: - Methods
     private func profileImageViewSetup() {
@@ -86,7 +86,9 @@ final class ProfileViewController: UIViewController {
         view.addSubview(exitButton)
         exitButton.translatesAutoresizingMaskIntoConstraints = false
         
-        exitButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
+        exitButton.heightAnchor.constraint(equalToConstant: 24).isActive = true
+        exitButton.widthAnchor.constraint(equalToConstant: 24).isActive = true
+        exitButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -24).isActive = true
         exitButton.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor).isActive = true
     }
 }

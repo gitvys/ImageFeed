@@ -165,7 +165,11 @@
                                 </connections>
                             </scrollView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3sh-Eh-ngi">
-                                <rect key="frame" x="159" y="771" width="75" height="65"/>
+                                <rect key="frame" x="171" y="785" width="51" height="51"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="51" id="9gg-yG-w4z"/>
+                                    <constraint firstAttribute="width" constant="51" id="AFj-qh-YFw"/>
+                                </constraints>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" image="Sharing"/>
                                 <buttonConfiguration key="configuration" style="plain" image="Sharing"/>
@@ -190,9 +194,9 @@
                         <viewLayoutGuide key="safeArea" id="mmV-f7-Rqu"/>
                         <color key="backgroundColor" name="YP Black"/>
                         <constraints>
-                            <constraint firstItem="mmV-f7-Rqu" firstAttribute="bottom" secondItem="3sh-Eh-ngi" secondAttribute="bottom" constant="16" id="8SS-DD-PUb"/>
-                            <constraint firstItem="3sh-Eh-ngi" firstAttribute="centerX" secondItem="T59-ks-He4" secondAttribute="centerX" id="DRD-FQ-8SX"/>
+                            <constraint firstItem="3sh-Eh-ngi" firstAttribute="bottom" secondItem="mmV-f7-Rqu" secondAttribute="bottom" constant="-16" id="3hG-TH-Qoy"/>
                             <constraint firstAttribute="trailing" secondItem="Te6-wM-wns" secondAttribute="trailing" id="RdS-k6-KEr"/>
+                            <constraint firstItem="3sh-Eh-ngi" firstAttribute="centerX" secondItem="mmV-f7-Rqu" secondAttribute="centerX" id="Zv1-dZ-KRv"/>
                             <constraint firstItem="eDJ-9A-11h" firstAttribute="top" secondItem="mmV-f7-Rqu" secondAttribute="top" constant="8" id="aRA-mg-SQ9"/>
                             <constraint firstItem="eDJ-9A-11h" firstAttribute="leading" secondItem="mmV-f7-Rqu" secondAttribute="leading" constant="8" id="gmY-qv-B5v"/>
                             <constraint firstItem="Te6-wM-wns" firstAttribute="leading" secondItem="T59-ks-He4" secondAttribute="leading" id="jVl-Tc-dfT"/>

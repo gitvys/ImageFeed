@@ -32,11 +32,11 @@ final class SingleImageViewController: UIViewController {
         scrollView.maximumZoomScale = 1.25
     }
     
-    @IBAction func didTapBack() {
+    @IBAction private func didTapBack() {
         dismiss(animated: true, completion: nil)
     }
     
-    @IBAction func didTapShareButton(_ sender: UIButton) {
+    @IBAction private func didTapShareButton(_ sender: UIButton) {
         guard let image = image else { return }
         let share = UIActivityViewController(activityItems: [image], applicationActivities: nil)
         present(share, animated: true, completion: nil)
@@ -49,6 +49,10 @@ final class SingleImageViewController: UIViewController {
         view.layoutIfNeeded()
         let visibleRectSize = scrollView.bounds.size
         let imageSize = image.size
+        guard imageSize.width > 0, imageSize.height > 0 else {
+            scrollView.setZoomScale(minZoomScale, animated: false)
+            return
+        }
         let hScale = visibleRectSize.width / imageSize.width
         let vScale = visibleRectSize.height / imageSize.height
         let scale = min(maxZoomScale, max(minZoomScale, min(hScale, vScale)))
