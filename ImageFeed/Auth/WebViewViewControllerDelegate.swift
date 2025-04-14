@@ -5,7 +5,7 @@
 //  Created by Vladislav Sokolov on 08.04.2025.
 //
 
-import UIKit
+import Foundation
 
 protocol WebViewViewControllerDelegate: AnyObject {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String)

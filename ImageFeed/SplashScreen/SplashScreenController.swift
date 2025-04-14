@@ -8,16 +8,18 @@
 import UIKit
 
 final class SplashScreenController: UIViewController {
-    private let storage = OAuth2TokenStorage()
+    private let storage = OAuth2TokenStorage.shared
     private let showAuthenticationScreenSegueIdentifier = "showAuthScreen"
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if storage.token != nil {
+        print("viewDidAppear вызван")
+        if let token = storage.token {
+            print("Токен существует: \(token)")
             switchToTabBarController()
-        }
-        else {
+        } else {
+            print("Токен отсутствует, переходим к экрану авторизации")
             performSegue(withIdentifier: showAuthenticationScreenSegueIdentifier, sender: nil)
         }
     }
@@ -39,6 +41,7 @@ final class SplashScreenController: UIViewController {
         let tabBarController = UIStoryboard(name: "Main", bundle: .main)
             .instantiateViewController(withIdentifier: "TabBarViewController")
         window.rootViewController = tabBarController
+        print("Переключение на TabBarController")
     }
 }
 
@@ -61,8 +64,15 @@ extension SplashScreenController {
 
 extension SplashScreenController: AuthViewControllerDelegate {
     func didAuthenticate(_ vc: AuthViewController) {
+        print("Авторизация успешна, переключаемся на TabBarController")
         vc.dismiss(animated: true) {
-            self.switchToTabBarController()
+            if let token = self.storage.token {
+                print("Токен существует после авторизации: \(token)")
+                self.switchToTabBarController()
+            } else {
+                print("Токен отсутствует после авторизации")
+            }
         }
     }
 }
+

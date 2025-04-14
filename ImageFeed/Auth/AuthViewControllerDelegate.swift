@@ -5,7 +5,7 @@
 //  Created by Vladislav Sokolov on 13.04.2025.
 //
 
-import UIKit
+import Foundation
 
 protocol AuthViewControllerDelegate: AnyObject {
     func didAuthenticate(_ vc: AuthViewController)

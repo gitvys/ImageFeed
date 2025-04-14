@@ -40,7 +40,8 @@ final class AuthViewController: UIViewController, WebViewViewControllerDelegate 
         oauth2Service.fetchOAuthToken(code: code) { [weak self] result in
             guard let self = self else { return }
             switch result {
-            case .success(_):
+            case .success:
+                print("Токен успешно получен")
                 self.delegate?.didAuthenticate(self)
             case .failure(let error):
                 print("Неудалось получить токен: \(error)")
@@ -54,8 +55,8 @@ final class AuthViewController: UIViewController, WebViewViewControllerDelegate 
     
     // MARK: - Methods
     private func configureBackButton() {
-        navigationController?.navigationBar.backIndicatorImage = UIImage(named: "Nav_back_button")
-        navigationController?.navigationBar.backIndicatorTransitionMaskImage = UIImage(named: "Nav_back_button")
+        navigationController?.navigationBar.backIndicatorImage = UIImage(resource: .navBackButton)
+        navigationController?.navigationBar.backIndicatorTransitionMaskImage = UIImage(resource: .navBackButton)
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         navigationItem.backBarButtonItem?.tintColor = .ypBlack
     }

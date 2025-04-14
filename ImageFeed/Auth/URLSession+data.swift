@@ -5,7 +5,7 @@
 //  Created by Vladislav Sokolov on 11.04.2025.
 //
 
-import UIKit
+import Foundation
 
 enum NetworkError: Error {
     case httpStatusCode(Int)

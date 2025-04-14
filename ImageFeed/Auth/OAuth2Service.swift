@@ -5,7 +5,7 @@
 //  Created by Vladislav Sokolov on 10.04.2025.
 //
 
-import UIKit
+import Foundation
 
 final class OAuth2Service {
     static let shared = OAuth2Service()
@@ -23,25 +23,7 @@ final class OAuth2Service {
             case createdAt = "created_at"
         }
     }
-    let tokenStorage = OAuth2TokenStorage()
-    
-    private func makeOAuthTokenRequest(code: String) -> URLRequest? {
-        let baseURL = Constants.defaultBaseURL
-        guard let url = URL(
-                string: "oauth/token"
-                + "?client_id=\(Constants.accessKey)"
-                + "&&client_secret=\(Constants.secretKey)"
-                + "&&redirect_uri=\(Constants.redirectURI)"
-                + "&&grant_type=authorization_code"
-                + "&&code=\(code)",
-                relativeTo: baseURL
-            )
-        else { return nil }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        return request
-    }
+    let tokenStorage = OAuth2TokenStorage.shared
     
     func fetchOAuthToken(code: String, completion: @escaping (Result<String, Error>) -> Void) {
         guard let request = makeOAuthTokenRequest(code: code) else {
@@ -55,6 +37,8 @@ final class OAuth2Service {
                 do {
                     let tokenResponse = try JSONDecoder().decode(OAuthTokenResponseBody.self, from: success)
                     self.tokenStorage.token = tokenResponse.accessToken
+                    print("Токен получен и сохранен: \(tokenResponse.accessToken)")
+                    print("Текущий токен в хранилище: \(self.tokenStorage.token ?? "nil")")
                     completion(.success(tokenResponse.accessToken))
                 } catch {
                     print("Ошибка декодирования: \(error)")
@@ -66,5 +50,23 @@ final class OAuth2Service {
             }
         }
         task.resume()
+    }
+    
+    private func makeOAuthTokenRequest(code: String) -> URLRequest? {
+        let baseURL = Constants.defaultBaseURL
+        guard let url = URL(
+            string: "oauth/token"
+            + "?client_id=\(Constants.accessKey)"
+            + "&&client_secret=\(Constants.secretKey)"
+            + "&&redirect_uri=\(Constants.redirectURI)"
+            + "&&grant_type=authorization_code"
+            + "&&code=\(code)",
+            relativeTo: baseURL
+        )
+        else { return nil }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        return request
     }
 }
