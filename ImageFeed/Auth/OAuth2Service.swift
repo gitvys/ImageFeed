@@ -22,7 +22,12 @@ final class OAuth2Service {
             case scope
             case createdAt = "created_at"
         }
+        
     }
+    enum httpMethod: String {
+        case post = "POST"
+    }
+    
     let tokenStorage = OAuth2TokenStorage.shared
     
     func fetchOAuthToken(code: String, completion: @escaping (Result<String, Error>) -> Void) {
@@ -38,7 +43,6 @@ final class OAuth2Service {
                     let tokenResponse = try JSONDecoder().decode(OAuthTokenResponseBody.self, from: success)
                     self.tokenStorage.token = tokenResponse.accessToken
                     print("Токен получен и сохранен: \(tokenResponse.accessToken)")
-                    print("Текущий токен в хранилище: \(self.tokenStorage.token ?? "nil")")
                     completion(.success(tokenResponse.accessToken))
                 } catch {
                     print("Ошибка декодирования: \(error)")
@@ -66,7 +70,7 @@ final class OAuth2Service {
         else { return nil }
         
         var request = URLRequest(url: url)
-        request.httpMethod = "POST"
+        request.httpMethod = httpMethod.post.rawValue
         return request
     }
 }

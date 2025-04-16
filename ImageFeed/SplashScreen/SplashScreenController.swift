@@ -13,13 +13,11 @@ final class SplashScreenController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
         print("viewDidAppear вызван")
-        if let token = storage.token {
-            print("Токен существует: \(token)")
+        
+        if storage.token != nil {
             switchToTabBarController()
         } else {
-            print("Токен отсутствует, переходим к экрану авторизации")
             performSegue(withIdentifier: showAuthenticationScreenSegueIdentifier, sender: nil)
         }
     }
@@ -41,7 +39,7 @@ final class SplashScreenController: UIViewController {
         let tabBarController = UIStoryboard(name: "Main", bundle: .main)
             .instantiateViewController(withIdentifier: "TabBarViewController")
         window.rootViewController = tabBarController
-        print("Переключение на TabBarController")
+//        print("Переключение на TabBarController")
     }
 }
 
@@ -65,14 +63,7 @@ extension SplashScreenController {
 extension SplashScreenController: AuthViewControllerDelegate {
     func didAuthenticate(_ vc: AuthViewController) {
         print("Авторизация успешна, переключаемся на TabBarController")
-        vc.dismiss(animated: true) {
-            if let token = self.storage.token {
-                print("Токен существует после авторизации: \(token)")
-                self.switchToTabBarController()
-            } else {
-                print("Токен отсутствует после авторизации")
-            }
-        }
+        navigationController?.popViewController(animated: true)
+        self.switchToTabBarController()
     }
 }
-
