@@ -14,3 +14,7 @@ enum Constants {
     static let accessScope = "public+read_user+write_likes"
     static let defaultBaseURL = URL(string: "https://unsplash.com")
 }
+
+enum HttpMethods: String {
+    case post = "POST"
+}

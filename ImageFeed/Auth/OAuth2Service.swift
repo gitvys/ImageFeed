@@ -24,9 +24,6 @@ final class OAuth2Service {
         }
         
     }
-    enum httpMethod: String {
-        case post = "POST"
-    }
     
     let tokenStorage = OAuth2TokenStorage.shared
     
@@ -70,7 +67,7 @@ final class OAuth2Service {
         else { return nil }
         
         var request = URLRequest(url: url)
-        request.httpMethod = httpMethod.post.rawValue
+        request.httpMethod = HttpMethods.post.rawValue
         return request
     }
 }
