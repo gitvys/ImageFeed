@@ -18,9 +18,14 @@ final class ProfileViewController: UIViewController {
     private var descriptionLabel: UILabel?
     // MARK: - Overrides Methods
     override func viewDidLoad() {
+        super.viewDidLoad()
         profileImageViewSetup()
         profileLabelsSetup()
         profileButtonsSetup()
+        
+        if let profile = ProfileService.shared.profile {
+            updateProfileDetails(profile: profile)
+        }
     }
     
     // MARK: - IB Actions
@@ -90,5 +95,11 @@ final class ProfileViewController: UIViewController {
         exitButton.widthAnchor.constraint(equalToConstant: 24).isActive = true
         exitButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -24).isActive = true
         exitButton.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor).isActive = true
+    }
+    
+    private func updateProfileDetails(profile: ProfileService.Profile) {
+        userNameLabel?.text = profile.name
+                userLoginLabel?.text = profile.loginName
+                descriptionLabel?.text = profile.bio
     }
 }

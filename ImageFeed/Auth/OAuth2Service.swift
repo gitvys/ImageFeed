@@ -8,6 +8,9 @@
 import Foundation
 
 final class OAuth2Service {
+    private let urlSession = URLSession.shared
+    private var task: URLSessionTask?
+    private var lastCode: String?
     static let shared = OAuth2Service()
     private init() {}
     struct OAuthTokenResponseBody: Decodable {
@@ -28,28 +31,55 @@ final class OAuth2Service {
     let tokenStorage = OAuth2TokenStorage.shared
     
     func fetchOAuthToken(code: String, completion: @escaping (Result<String, Error>) -> Void) {
+        assert(Thread.isMainThread)
+        if task != nil {
+            if lastCode != code {
+                task?.cancel()
+            }
+            else {
+                completion(.failure(AuthServiceError.invalidRequest))
+                return
+            }
+        }
+        else {
+            if lastCode == code {
+                completion(.failure(AuthServiceError.invalidRequest))
+                return
+            }
+        }
+        lastCode = code
         guard let request = makeOAuthTokenRequest(code: code) else {
             completion(.failure(NetworkError.urlSessionError))
             return
         }
         
-        let task = URLSession.shared.data(for: request) { result in
-            switch result {
-            case .success(let success):
-                do {
-                    let tokenResponse = try JSONDecoder().decode(OAuthTokenResponseBody.self, from: success)
-                    self.tokenStorage.token = tokenResponse.accessToken
-                    print("Токен получен и сохранен: \(tokenResponse.accessToken)")
-                    completion(.success(tokenResponse.accessToken))
-                } catch {
-                    print("Ошибка декодирования: \(error)")
+        let task = urlSession.dataTask(with: request) { [weak self] data, response, error in
+            DispatchQueue.main.async {
+                switch (data, error) {
+                case (let data?, nil):
+                    do {
+                        let tokenResponse = try JSONDecoder().decode(OAuthTokenResponseBody.self, from: data)
+                        self?.tokenStorage.token = tokenResponse.accessToken
+                        print("Токен получен и сохранен: \(tokenResponse.accessToken)")
+                        completion(.success(tokenResponse.accessToken))
+                    } catch {
+                        print("Ошибка декодирования: \(error)")
+                        completion(.failure(error))
+                    }
+                case (nil, let error?):
+                    print("Сетевая ошибка: \(error)")
                     completion(.failure(error))
+                case (nil, nil ):
+                    print("Нет данных")
+                    completion(.failure(AuthServiceError.noData))
+                default:
+                    print("В ответе сервера содержится ошибка: \(String(describing: error))")
                 }
-            case .failure(let error):
-                print("Сетевая ошибка: \(error)")
-                completion(.failure(error))
+                self?.task = nil
+                self?.lastCode = nil
             }
         }
+        self.task = task
         task.resume()
     }
     
@@ -64,7 +94,10 @@ final class OAuth2Service {
             + "&&code=\(code)",
             relativeTo: baseURL
         )
-        else { return nil }
+        else {
+            assertionFailure("Failed to create URL")
+            return nil
+        }
         
         var request = URLRequest(url: url)
         request.httpMethod = HttpMethods.post.rawValue

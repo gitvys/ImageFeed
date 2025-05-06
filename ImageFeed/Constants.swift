@@ -13,8 +13,15 @@ enum Constants {
     static let redirectURI = "urn:ietf:wg:oauth:2.0:oob"
     static let accessScope = "public+read_user+write_likes"
     static let defaultBaseURL = URL(string: "https://unsplash.com")
+    static let appAPIBaseURL = URL(string: "https://api.unsplash.com")
 }
 
 enum HttpMethods: String {
     case post = "POST"
+    case get = "GET"
+}
+
+enum AuthServiceError: Error {
+    case invalidRequest
+    case noData
 }

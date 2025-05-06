@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import ProgressHUD
 
 final class AuthViewController: UIViewController, WebViewViewControllerDelegate {
     
@@ -36,9 +37,11 @@ final class AuthViewController: UIViewController, WebViewViewControllerDelegate 
     // MARK: - Delegate
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
         navigationController?.popViewController(animated: true)
+        UIBlockingProgressHUD.show()
         
         oauth2Service.fetchOAuthToken(code: code) { [weak self] result in
             guard let self = self else { return }
+            UIBlockingProgressHUD.dismiss()
             switch result {
             case .success:
                 print("Токен успешно получен")
