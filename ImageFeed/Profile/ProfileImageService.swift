@@ -1,44 +1,37 @@
 //
-//  ProfileService.swift
+//  ProfileImageService.swift
 //  ImageFeed
 //
-//  Created by Vladislav Sokolov on 02.05.2025.
+//  Created by Vladislav Sokolov on 06.05.2025.
 //
 
 import Foundation
 
-final class ProfileService {
+final class ProfileImageService {
+    private let profileService = ProfileService.shared
+    static let shared = ProfileImageService()
+    private(set) var avatarURL: String?
     private let tokenStorage = OAuth2TokenStorage.shared
-    private let urlSession = URLSession.shared
     private var task: URLSessionTask?
-    static let shared = ProfileService()
-    private(set) var profile: Profile?
     
-    struct ProfileResult: Codable {
-        let username: String
-        let firstName: String
-        let lastName: String
-        let bio: String?
+    struct ProfileImage: Codable {
+        let small: String
+    }
+    
+    struct UserResult: Codable {
+        let profileImage: ProfileImage
         
-        private enum CodingKeys: String, CodingKey {
-            case username
-            case firstName = "first_name"
-            case lastName = "last_name"
-            case bio
+        enum CodingKeys: String, CodingKey {
+            case profileImage = "profile_image"
         }
     }
     
-    struct Profile {
-        let username: String
-        let name: String
-        let loginName: String
-        let bio: String
-    }
+    private init() {}
     
-    private func makeProfileDataRequest() -> URLRequest? {
+    private func makeProfileImageRequest() -> URLRequest? {
         let baseURL = Constants.appAPIBaseURL
         guard let url = URL(
-            string: "/me",
+            string: "/users/\(String(describing: profileService.profile?.username))",
             relativeTo: baseURL
         )
         else {
@@ -57,13 +50,13 @@ final class ProfileService {
         return request
     }
     
-    func fetchProfile(_ token: String, completion: @escaping (Result<Profile, Error>) -> Void) {
+    func fetchProfileImageURL(username: String, _ completion: @escaping (Result<String, Error>) -> Void) {
         assert(Thread.isMainThread)
         if task != nil {
             task?.cancel()
         }
         
-        guard let request = makeProfileDataRequest() else {
+        guard let request = makeProfileImageRequest() else {
             completion(.failure(AuthServiceError.invalidRequest))
             return
         }
@@ -71,7 +64,7 @@ final class ProfileService {
         task = URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
                 if let error = error {
-                    print("Ошибка при получении профиля: \(error)")
+                    print("Ошибка при получении изображения: \(error)")
                     completion(.failure(error))
                     return
                 }
@@ -83,12 +76,9 @@ final class ProfileService {
                 }
                 
                 do {
-                    let profileResult = try JSONDecoder().decode(ProfileResult.self, from: data)
-                    let name = "\(profileResult.firstName) \(profileResult.lastName)"
-                    let loginName = "@\(profileResult.username)"
-                    let profile = Profile(username: profileResult.username, name: name, loginName: loginName, bio: profileResult.bio ?? "")
-                    self.profile = profile
-                    completion(.success(profile))
+                    let profileImageResult = try JSONDecoder().decode(UserResult.self, from: data)
+                    let small = "\(profileImageResult.profileImage.small))"
+                    completion(.success(small))
                 }
                 catch {
                     print("Ошибка декодирования: \(error)")
